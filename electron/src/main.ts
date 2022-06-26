@@ -1,14 +1,13 @@
 import { app, BrowserWindow } from "electron";
 import { invoke } from "./shared/invoke";
 
-// TODO need to check for prod here, and disable
 const useDevServer = process.env.DEV_SERVER == "true" ? true : false;
 console.log("useDevServer", useDevServer);
 
 const createWindow = () => {
 	const win = new BrowserWindow({
-		width: 800,
-		height: 600,
+		width: 1200,
+		height: 800,
 	});
 
 	if (!app.isPackaged && useDevServer) {

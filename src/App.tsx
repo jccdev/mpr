@@ -1,13 +1,23 @@
-import { useState } from "react";
-import logo from "./logo.svg";
+import { useEffect, useState } from "react";
+import fsp from "fs/promises";
 import "./App.css";
+import { invoke } from "../electron/src/shared/invoke";
 
 function App() {
-	const [count, setCount] = useState(0);
+	const [files, setFiles] = useState<string[]>([]);
+
+	useEffect(() => {
+		invoke(async () => {
+			const fileList = await fsp.readdir(
+				`I:\\WhatCd\\Billions and Billions Flac`
+			);
+			setFiles(files);
+		});
+	});
 
 	return (
 		<div className="App">
-			<header className="text-center">
+			<header>
 				<h1 className="text-3xl">mpr</h1>
 			</header>
 		</div>

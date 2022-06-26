@@ -8,4 +8,12 @@ export default defineConfig({
 		outDir: "dist/web",
 	},
 	plugins: [react()],
+	resolve: {
+		alias: {
+			process: "process/browser",
+			stream: "stream-browserify",
+			zlib: "browserify-zlib",
+			util: "util",
+		},
+	},
 });
