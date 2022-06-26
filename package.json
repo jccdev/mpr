@@ -7,11 +7,11 @@
 	"license": "MIT",
 	"version": "0.1.0",
 	"scripts": {
-		"start": "cross-env DEV_SERVER=true electron ./dist/electron/main.js",
-		"clean": "rimraf dist/electron/*",
-		"build-dev": "yarn clean && tsc --p electron/tsconfig.json -outDir dist/electron",
-		"web-dev": "vite",
-		"web-build": "tsc && vite build"
+		"electron:start": "cross-env DEV_SERVER=true electron ./dist/electron/main.js",
+		"electron:clean": "rimraf dist/electron/*",
+		"electron:build-dev": "yarn electron:clean && tsc --p electron/tsconfig.json -outDir dist/electron",
+		"vite:build-dev": "vite",
+		"vite:build": "tsc && vite build"
 	},
 	"dependencies": {
 		"react": "^18.0.0",
