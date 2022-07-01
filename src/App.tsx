@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import "./App.css";
 import { invoke } from "../electron/src/shared/invoke";
-import { Api } from "../electron/src/shared/types/api";
+import { Api, Track } from "../electron/src/shared/types/api";
 import pretty from "pretty-format";
 import {
+	MoreHorizontal,
 	Music,
 	Pause,
 	Play,
@@ -20,7 +21,7 @@ declare global {
 }
 
 function App() {
-	const [files, setFiles] = useState<{ location: string; blob: Blob }[]>([]);
+	const [files, setFiles] = useState<Track[]>([]);
 	const [currentTrackIx, setCurrentTrackIx] = useState<number>(null);
 	const [playing, setPlaying] = useState<boolean>(false);
 	const [currentTime, setCurrentTime] = useState<string>(null);
@@ -39,8 +40,6 @@ function App() {
 			const dataUrl = URL.createObjectURL(currentTrack.blob);
 			audioEl.current.src = dataUrl;
 			audioEl.current.setAttribute("type", currentTrack.blob.type);
-
-			// audioEl.current.play();
 		}
 	}, [files]);
 
@@ -93,6 +92,17 @@ function App() {
 			.padStart(2, "0");
 		setDuration(`${minutes}:${seconds}`);
 	}
+
+	function playTrack(ix: number) {
+		setCurrentTrackIx(ix);
+		setPlaying(true);
+		const track = files[ix];
+		const dataUrl = URL.createObjectURL(track.blob);
+		audioEl.current.src = dataUrl;
+		audioEl.current.setAttribute("type", track.blob.type);
+		audioEl.current.play();
+	}
+
 	function play() {
 		setPlaying(true);
 		audioEl.current.play();
@@ -103,14 +113,77 @@ function App() {
 		audioEl.current.pause();
 	}
 
+	function trackList(tracks: Track[]) {
+		const trackRows: JSX.Element[] = [];
+		for (let ix = 0; ix < tracks.length; ix++) {
+			const track = tracks[ix];
+			trackRows.push(
+				<tr
+					key={ix}
+					className="hover:bg-stone-800 hover:cursor-pointer"
+					onClick={() => playTrack(ix)}
+				>
+					<td className="py-3">
+						<div className="ml-10 bg-gray-50 w-10 h-10 flex">
+							<Music
+								className="mx-auto my-auto dark:text-slate-600"
+								width={15}
+								height={15}
+							/>
+						</div>
+					</td>
+					<td className="py-3">{track.title}</td>
+					<td className="py-3">{track.album}</td>
+					<td className="py-3">{track.artist}</td>
+					<td className="py-3">1:23</td>
+					<td
+						className="py-3"
+						onClick={(e) => {
+							e.stopPropagation();
+							alert("todo");
+						}}
+					>
+						<button type="button">
+							<MoreHorizontal
+								width={20}
+								height={20}
+								className="hover:dark:text-white"
+							/>
+						</button>
+					</td>
+				</tr>
+			);
+		}
+
+		return (
+			<table className="table-auto w-full">
+				<thead>
+					{/*  maybe border-t */}
+					<tr className="text-left">
+						<th></th>
+						<th>Title</th>
+						<th>Album</th>
+						<th>Artist</th>
+						<th>Duration</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>{trackRows}</tbody>
+			</table>
+		);
+	}
+
 	return (
 		<div className="h-screen flex flex-col">
 			<div className="grow min-h-0 overflow-y-auto">
 				<header>
 					<h1 className="text-3xl">mpr</h1>
-					<div>Files:</div>
-					<pre>{pretty(files)}</pre>
+					<hr />
 				</header>
+				<main>
+					<div className="container mx-auto">{trackList(files)}</div>
+					{/* <pre>{pretty(files)}</pre> */}
+				</main>
 				<div>
 					<audio
 						onEnded={() => nextTrack()}
