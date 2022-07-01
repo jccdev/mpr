@@ -3,7 +3,6 @@ import { invoke } from "./shared/invoke";
 import path from "path";
 
 const useDevServer = process.env.DEV_SERVER == "true" ? true : false;
-console.log("useDevServer", useDevServer);
 
 const createWindow = () => {
 	const win = new BrowserWindow({
