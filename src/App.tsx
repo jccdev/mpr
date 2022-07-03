@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import "./App.css";
 import { invoke } from "../electron/src/shared/invoke";
-import { Api, Track } from "../electron/src/shared/types/api";
+import { Api, Track, Album } from "../electron/src/shared/types/api";
 import pretty from "pretty-format";
 import {
 	MoreHorizontal,
@@ -21,7 +21,8 @@ declare global {
 }
 
 function App() {
-	const [files, setFiles] = useState<Track[]>([]);
+	const [init, setInit] = useState(false);
+	const [album, setAlbum] = useState<Album>(null);
 	const [currentTrackIx, setCurrentTrackIx] = useState<number>(null);
 	const [playing, setPlaying] = useState<boolean>(false);
 	const [currentTime, setCurrentTime] = useState<string>(null);
@@ -29,30 +30,34 @@ function App() {
 	const audioEl = useRef<HTMLAudioElement>(null);
 	useEffect(() => {
 		invoke(async () => {
-			setFiles(await window.api.fileExplorer.getFiles());
+			await window.api.init();
+
+			setAlbum(await window.api.library.getAlbum(1));
+			// await window.api.library.getAlbum(1);
+			// setFiles(await window.api.fileExplorer.getFiles());
 		});
 	}, []);
 
 	useEffect(() => {
-		if (files?.length > 0) {
+		if (album?.tracks?.length > 0) {
 			setCurrentTrackIx(0);
-			const currentTrack = files[0];
+			const currentTrack = album?.tracks[0];
 			const dataUrl = URL.createObjectURL(currentTrack.blob);
 			audioEl.current.src = dataUrl;
 			audioEl.current.setAttribute("type", currentTrack.blob.type);
 		}
-	}, [files]);
+	}, [album]);
 
 	function nextTrack() {
 		let nextTrackIx = currentTrackIx + 1;
 
-		if (nextTrackIx >= files.length) {
+		if (nextTrackIx >= album.tracks.length) {
 			nextTrackIx = 0;
 		}
 
 		setCurrentTrackIx(nextTrackIx);
 
-		const nextTrack = files[nextTrackIx];
+		const nextTrack = album.tracks[nextTrackIx];
 		const dataUrl = URL.createObjectURL(nextTrack.blob);
 		audioEl.current.src = dataUrl;
 		audioEl.current.setAttribute("type", nextTrack.blob.type);
@@ -63,12 +68,12 @@ function App() {
 		let prevTrackIx = currentTrackIx - 1;
 
 		if (prevTrackIx < 0) {
-			prevTrackIx = files.length - 1;
+			prevTrackIx = album.tracks.length - 1;
 		}
 
 		setCurrentTrackIx(prevTrackIx);
 
-		const prevTrack = files[prevTrackIx];
+		const prevTrack = album.tracks[prevTrackIx];
 		const dataUrl = URL.createObjectURL(prevTrack.blob);
 		audioEl.current.src = dataUrl;
 		audioEl.current.setAttribute("type", prevTrack.blob.type);
@@ -96,7 +101,7 @@ function App() {
 	function playTrack(ix: number) {
 		setCurrentTrackIx(ix);
 		setPlaying(true);
-		const track = files[ix];
+		const track = album.tracks[ix];
 		const dataUrl = URL.createObjectURL(track.blob);
 		audioEl.current.src = dataUrl;
 		audioEl.current.setAttribute("type", track.blob.type);
@@ -133,8 +138,8 @@ function App() {
 						</div>
 					</td>
 					<td className="py-3">{track.title}</td>
-					<td className="py-3">{track.album}</td>
-					<td className="py-3">{track.artist}</td>
+					<td className="py-3">{track.album.name}</td>
+					<td className="py-3">{track.artist.name}</td>
 					<td className="py-3">1:23</td>
 					<td
 						className="py-3"
@@ -181,7 +186,9 @@ function App() {
 					<hr />
 				</header>
 				<main>
-					<div className="container mx-auto">{trackList(files)}</div>
+					<div className="container mx-auto">
+						{trackList(album?.tracks ?? [])}
+					</div>
 					{/* <pre>{pretty(files)}</pre> */}
 				</main>
 				<div>
