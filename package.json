@@ -7,7 +7,7 @@
 	"license": "MIT",
 	"version": "0.1.0",
 	"scripts": {
-    "start": "yarn electron:build-dev && concurrently \"yarn electron:start\" \"yarn vite:start\"",
+		"start": "yarn electron:build-dev && concurrently \"yarn electron:start\" \"yarn vite:start\"",
 		"electron:start": "cross-env DEV_SERVER=true electron ./dist/electron/main.js",
 		"electron:clean": "rimraf dist/electron/*",
 		"electron:build-dev": "yarn electron:clean && tsc --p electron/tsconfig.json -outDir dist/electron",
@@ -15,15 +15,16 @@
 		"vite:build": "tsc && vite build"
 	},
 	"dependencies": {
+		"better-sqlite3": "^7.5.3",
+		"electron-rebuild": "^3.2.7",
+		"knex": "^2.1.0",
 		"react": "^18.0.0",
 		"react-dom": "^18.0.0",
-		"react-feather": "^2.0.10",
-		"sqlite3": "^5.0.8"
+		"react-feather": "^2.0.10"
 	},
 	"devDependencies": {
 		"@types/react": "^18.0.0",
 		"@types/react-dom": "^18.0.0",
-		"@types/sqlite3": "^3.1.8",
 		"@vitejs/plugin-react": "^1.3.0",
 		"autoprefixer": "^10.4.7",
 		"concurrently": "^7.2.2",

@@ -22,7 +22,7 @@ async function getDirContents() {
 	for (const fileName of dirFiles) {
 		if (path.extname(fileName) === ".flac") {
 			const filePath = path.join(tmpData.dir, fileName);
-			const match = filePath.match(/\\\d+ (.*).flac/);
+			const match = filePath.match(/\/\d+ (.*).flac/);
 			const parsedTitle = match[1];
 			results.push({
 				filePath,
@@ -42,30 +42,30 @@ async function getDirContents() {
 async function init() {
 	try {
 		if (!isInit) {
+			await db.setup();
 			isInit = true;
 			await db.setup();
-			await db.resetAll();
-			const artistDb = await db.insertArtist({ name: "Billions and Billions" });
+			// await db.resetAll();
+			// const artistDb = await db.insertArtist({ name: "Billions and Billions" });
 
-			const albumDb = await db.insertAlbum({
-				name: "Billions and Billions",
-				artist_id: artistDb.id,
-			});
+			// const albumDb = await db.insertAlbum({
+			// 	name: "Billions and Billions",
+			// 	artist_id: artistDb.id,
+			// });
 
-			const contents = await getDirContents();
-			for (const item of contents) {
-				await db.insertTrack({
-					title: item.title,
-					mime_type: item.mimeType,
-					file_path: item.filePath,
-					artist_id: artistDb.id,
-					album_id: albumDb.id,
-				});
-			}
+			// const contents = await getDirContents();
+			// for (const item of contents) {
+			// 	await db.insertTrack({
+			// 		title: item.title,
+			// 		mime_type: item.mimeType,
+			// 		file_path: item.filePath,
+			// 		artist_id: artistDb.id,
+			// 		album_id: albumDb.id,
+			// 	});
+			// }
 		}
 	} catch (e) {
 		console.error(e);
-		debugger;
 		throw e;
 	}
 }

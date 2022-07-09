@@ -30,9 +30,13 @@ function App() {
 	const audioEl = useRef<HTMLAudioElement>(null);
 	useEffect(() => {
 		invoke(async () => {
-			await window.api.init();
-
-			setAlbum(await window.api.library.getAlbum(1));
+			try {
+				await window.api.init();
+				setAlbum(await window.api.library.getAlbum(1));
+			} catch (e) {
+				debugger;
+				throw e;
+			}
 			// await window.api.library.getAlbum(1);
 			// setFiles(await window.api.fileExplorer.getFiles());
 		});

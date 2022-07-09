@@ -4,6 +4,7 @@ import fsp from "fs/promises";
 
 async function getAlbum(id: number): Promise<Album> {
 	const albumDb = await db.getAlbum(id);
+	console.log("albumDb", albumDb);
 	const artistDb = await db.getArtist(albumDb.artist_id);
 	const tracksDb = await db.getTracksByAlbum(id);
 	const artist: Artist = {
